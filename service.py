@@ -1,0 +1,55 @@
+import asyncio
+from config import *
+from typing import Dict
+
+class Service:
+    def __init__(self,name,type):
+        self.__name = name
+        self.__type = type
+        self.__status = "NONE"
+        self.__retry_count = RETRY_COUNT 
+        self.__lock = asyncio.Lock()
+        
+
+    def get_name(self):
+        return self.__name
+
+    def get_service_name(self):
+        if self.__type == "TIMER":
+            return self.__name + ".timer"
+        else:
+            return self.__name
+    
+    def get_type(self):
+        return self.__type
+        
+    async def set_status_to_alive(self):
+        async with self.__lock:
+            self.__status = "ALIVE"
+
+    async def set_status_to_dead(self):
+        async with self.__lock:
+            self.__status = "DEAD"
+
+    async def set_status_to_failed(self):
+        async with self.__lock:
+            self.__status = "FAILED"
+
+    async def get_status(self):
+        async with self.__lock:
+            return self.__status
+        
+    async def get_retry_count(self):
+        async with self.__lock:
+            return self.__retry_count    
+        
+    async def reset_retry_counter(self):
+        async with self.__lock:    
+            self.__retry_count = RETRY_COUNT    
+            
+    async def decrease_retry_counter(self):
+        async with self.__lock:
+            self.__retry_count -= 1
+    
+    
+SERVICES_TO_CARE: Dict[str,Service] = {}
