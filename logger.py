@@ -12,8 +12,8 @@ def get_logger(name: str = "agent"):
         )
         
         file_handler = RotatingFileHandler(
-            LOG_DIR,
-            maxbytes= 10 * 1024 *  1024,
+            LOG_DIR+"/agent.log",
+            maxBytes= 10 * 1024 *  1024,
             )
         file_handler.setFormatter(formatter)
         logger.addHandler(file_handler)
