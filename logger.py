@@ -1,5 +1,6 @@
 from logging.handlers import RotatingFileHandler
 import logging
+from config import *
 
 def get_logger(name: str = "agent"):
     logger = logging.getLogger(name)
@@ -11,7 +12,7 @@ def get_logger(name: str = "agent"):
         )
         
         file_handler = RotatingFileHandler(
-            "/agent.log",
+            LOG_DIR,
             maxbytes= 10 * 1024 *  1024,
             )
         file_handler.setFormatter(formatter)
