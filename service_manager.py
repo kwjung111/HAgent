@@ -98,6 +98,6 @@ async def check_alive_async(service : Service) -> bool:
         return result.stdout.strip() =="active"
     return await loop.run_in_executor(None,_check)
 
-async def check_service_alive(service:str):
+async def check_service_alive(service:Service):
     return await check_alive_async(service)
         

@@ -30,7 +30,7 @@ async def lifespan(app: FastAPI):
     init()
     tasks = []
     tasks.append(asyncio.create_task(monitoring_node(INTERVAL)))
-    for service in SERVICES_TO_CARE:
+    for service in SERVICES_TO_CARE.values():
         tasks.append(asyncio.create_task(monitoring_service(service,INTERVAL)))
     tasks.append(asyncio.create_task(monitoring_target_service(INTERVAL)))
     yield
