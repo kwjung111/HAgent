@@ -70,9 +70,9 @@ async def monitoring_service(service: Service, interval):
         try:
             service_alive = await check_service_alive(service)
             if service_alive :
-                service.set_status_to_alive()
+                await service.set_status_to_alive()
             else:
-                service.set_status_to_dead()
+                await service.set_status_to_dead()
         except Exception as e:
             logger.error(f"[{service.get_name()}] systemctl check failed  : {e}")
             service.set_status_to_failed()
@@ -125,13 +125,13 @@ def health():
     
 @app.get("/status")
 async def status():
+    result = {}
+    for name, svc in SERVICES_TO_CARE.items():
+        result[name] = await svc.get_status()
     return {
         "mode":MODE,
         "target_status":TARGET_STATUS,
-        "services":{
-            name : await svc.get_status()
-            for name, svc in SERVICES_TO_CARE.items()
-        }
+        "services": result
     }
     
     

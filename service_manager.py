@@ -53,31 +53,34 @@ async def do_action(data):
                 continue                        
 
 
-async def command_async(service_name:str,command : str):
+async def command_async(service: Service ,command : str):
+
+    service_name = service.get_service_name()
     try:
-        result = subprocess.run(
-            ["sudo", "systemctl", command, service_name],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            check=False
+        process = await asyncio.create_subprocess_exec(
+            "sudo", "systemctl", command, service_name,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE
         )
-        if result.returncode == 0:
+        stdout, stderr = await process.communicate()
+
+        if process.returncode == 0:
             return True
-        else: 
-            logger.error(f"failed to {command} : {result.stderr.strip()}")
+        else:
+            logger.error(f"[{service_name}] failed to {command}: {stderr.decode().strip()}")
             return False
     except Exception as e:
-        logger.error(f"systemctl {command} failed : {e}")
+        logger.error(f"systemctl {command} failed: {e}")
+        return False
 
 async def start(service : Service):
-    return await command_async(service.get_service_name(),"start")
+    return await command_async(service, "start")
 
 async def start_service(service :Service ):
     return await start(service)
 
 async def stop(service : Service):
-    return await command_async(service.get_service_name(),"stop")
+    return await command_async(service,"stop")
 
 async def stop_service(service: Service):
     return await stop(service)

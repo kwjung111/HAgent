@@ -9,7 +9,7 @@ class Service:
         self.__status = "NONE"
         self.__retry_count = RETRY_COUNT 
         self.__lock = asyncio.Lock()
-        
+        self.__action_lock = asyncio.Lock() #for start and stop
 
     def get_name(self):
         return self.__name
@@ -22,7 +22,17 @@ class Service:
     
     def get_service_type(self):
         return self.__service_type
-        
+
+    async def run_exclusive(self,coro):
+        if self.__action_lock.locked():
+            return False
+        async with self.__action_lock:
+            await coro()
+            return True
+
+    def can_run_action(self):
+        return not self.__action_lock.locked()
+
     async def set_status_to_alive(self):
         async with self.__lock:
             self.__status = "ALIVE"
