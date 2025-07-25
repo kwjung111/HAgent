@@ -49,9 +49,10 @@ async def monitoring_node(interval):
         healthy= await health_check(URL)
         if not healthy:
             if TARGET_STATUS != "DEAD":
-                sendMessage(f"node dead!")
-                TARGET_STATUS="DEAD"
-                # ping 쏴보고 서버 없으면 전체 서비스 재시작
+                if prev_target_status == "ALIVE":
+                    sendMessage(f"node dead!")
+                    TARGET_STATUS="DEAD"
+                    # ping 쏴보고 서버 없으면 전체 서비스 재시작
         else:
             TARGET_STATUS="ALIVE"
         await asyncio.sleep(interval)
