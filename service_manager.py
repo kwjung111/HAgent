@@ -40,7 +40,7 @@ async def do_action(data):
                     logger.info(f"[{name}] - Detected master node's service become active. stopping local timer.")
                     sendMessage(f"[{name}] 마스터 재기동 감지. 페일백 합니다.")
                     retry_count = await service.get_retry_count()
-                    if await retry_count > 0:
+                    if retry_count > 0:
                         stop_success = await stop_service(service)
                         if stop_success:
                             await service.reset_retry_counter()
