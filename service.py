@@ -27,8 +27,7 @@ class Service:
         if self.__action_lock.locked():
             return False
         async with self.__action_lock:
-            await coro()
-            return True
+            return await coro()
 
     def can_run_action(self):
         return not self.__action_lock.locked()

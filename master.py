@@ -6,7 +6,7 @@ import httpx
 import subprocess
 from config import *
 from logger import get_logger
-from service_manager import do_action
+from service_manager import *
 from sendmessage import sendMessage
 from service import *
 
@@ -75,7 +75,7 @@ async def monitoring_service(service: Service, interval):
                 await service.set_status_to_dead()
         except Exception as e:
             logger.error(f"[{service.get_name()}] systemctl check failed  : {e}")
-            service.set_status_to_failed()
+            await service.set_status_to_failed()
         await asyncio.sleep(interval)
          
 async def monitoring_target_service(interval):
@@ -98,23 +98,6 @@ async def monitoring_target_service(interval):
             logger.error(f"monitoring failed : {e}")
         await asyncio.sleep(interval)
 
-        
-async def check_alive_async(service : Service) -> bool:
-    loop = asyncio.get_running_loop()
-    def _check():
-        result=subprocess.run(
-            ["sudo", "systemctl", "is-active", service.get_service_name()],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            check=False
-        )
-        return result.stdout.strip() =="active"
-    return await loop.run_in_executor(None,_check)
-
-async def check_service_alive(service:str):
-    return await check_alive_async(service)
-        
 app = FastAPI(lifespan=lifespan)
     
 @app.get("/health")

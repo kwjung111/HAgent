@@ -53,7 +53,7 @@ async def do_action(data):
                 continue                        
 
 
-async def command_async(service: Service ,command : str):
+async def command_async(service: Service ,command : str) -> bool:
 
     service_name = service.get_service_name()
     try:
@@ -84,3 +84,20 @@ async def stop(service : Service):
 
 async def stop_service(service: Service):
     return await stop(service)
+
+async def check_alive_async(service : Service) -> bool:
+    loop = asyncio.get_running_loop()
+    def _check():
+        result=subprocess.run(
+            ["sudo", "systemctl", "is-active", service.get_service_name()],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            check=False
+        )
+        return result.stdout.strip() =="active"
+    return await loop.run_in_executor(None,_check)
+
+async def check_service_alive(service:str):
+    return await check_alive_async(service)
+        
