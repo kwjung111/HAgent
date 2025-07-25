@@ -15,6 +15,10 @@ INTERVAL=5
 RETRY_COUNT=3
 
 #Telegram Token for Alarm
-TG_TOKEN="8187547382:AAGchaydetQ22JSNWDqWaXUvlHRGfr6OorM"
+TG_TOKEN=""
 #Telegram ChatID for Alarm
-TG_CHATID="6443033704"
+TG_CHATID=""
+
+
+#LOG DIRECTORY
+LOG_DIR="/var/log/agent"

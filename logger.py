@@ -1,3 +1,4 @@
+from logging.handlers import RotatingFileHandler
 import logging
 
 def get_logger(name: str = "agent"):
@@ -9,7 +10,10 @@ def get_logger(name: str = "agent"):
             "%(asctime)s [%(levelname)s] %(name)s - %(message)s"
         )
         
-        file_handler = logging.FileHandler("/agent.log")
+        file_handler = RotatingFileHandler(
+            "/agent.log",
+            maxbytes= 10 * 1024 *  1024,
+            )
         file_handler.setFormatter(formatter)
         logger.addHandler(file_handler)
         
