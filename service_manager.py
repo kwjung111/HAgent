@@ -16,11 +16,13 @@ async def do_action(data):
         for name in data["services"].keys():
             service = SERVICES_TO_CARE[name]
             
+            #Fail-over 
             if data["services"][name] != "ALIVE":
                 if await service.get_status() != "ALIVE":
                     logger.info(f"[{name}] - Detected master node's service is dead. failover to local service ")
                     sendMessage(f"[{name}] 중단 감지. 페일오버 시도 합니다. ")
-                    if await service.get_retry_count() > 0:
+                    retry_count = await service.get_retry_count()
+                    if retry_count > 0:
                         restart_success = await start_service(service)
                         if restart_success:
                             await service.reset_retry_counter()
@@ -28,15 +30,17 @@ async def do_action(data):
                             await service.set_status_to_alive()
                         else:
                             await service.decrease_retry_counter()
-                    elif await service.get_retry_count() == 0:
+                    elif retry_count == 0:
                         sendMessage(f"[{name}] 페일오버 불가능. 확인 부탁드립니다")
                 continue
-                
+            
+            #Fail-back
             if data["services"][name] == "ALIVE":
                 if await service.get_status() == "ALIVE":
                     logger.info(f"[{name}] - Detected master node's service become active. stopping local timer.")
                     sendMessage(f"[{name}] 마스터 재기동 감지. 페일백 합니다.")
-                    if await service.get_retry_count() > 0:
+                    retry_count = await service.get_retry_count()
+                    if await retry_count > 0:
                         stop_success = await stop_service(service)
                         if stop_success:
                             await service.reset_retry_counter()
@@ -44,7 +48,7 @@ async def do_action(data):
                             await service.set_status_to_dead()
                         else:
                             await service.decrease_retry_counter()
-                    elif await service.get_retry_count() == 0:
+                    elif retry_count == 0:
                         sendMessage(f"[{name}] 페일백 불가능. 확인 부탁드립니다")
                 continue                        
 

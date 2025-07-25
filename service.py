@@ -3,9 +3,9 @@ from config import *
 from typing import Dict
 
 class Service:
-    def __init__(self,name,type):
+    def __init__(self,name,service_type):
         self.__name = name
-        self.__type = type
+        self.__service_type = service_type
         self.__status = "NONE"
         self.__retry_count = RETRY_COUNT 
         self.__lock = asyncio.Lock()
@@ -15,13 +15,13 @@ class Service:
         return self.__name
 
     def get_service_name(self):
-        if self.__type == "TIMER":
+        if self.__service_type == "TIMER":
             return self.__name + ".timer"
         else:
             return self.__name
     
-    def get_type(self):
-        return self.__type
+    def get_service_type(self):
+        return self.__service_type
         
     async def set_status_to_alive(self):
         async with self.__lock:

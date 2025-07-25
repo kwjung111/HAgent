@@ -50,7 +50,7 @@ async def monitoring_node(interval):
         if not healthy:
             if TARGET_STATUS != "DEAD":
                 if prev_target_status == "ALIVE":
-                    sendMessage(f"node dead!")
+                    sendMessage(f"{TARGET_NODE} 감지 불가")
                     TARGET_STATUS="DEAD"
                     # ping 쏴보고 서버 없으면 전체 서비스 재시작
         else:
